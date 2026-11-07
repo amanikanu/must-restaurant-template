@@ -56,6 +56,18 @@ ripple on the CTA · full-screen clip-path mobile menu.
 Verified at 1440 px, 768 px and 390 px. On small screens the hero stacks: plate block on top of
 the orange band, copy on white beneath it.
 
+## Push to GitHub
+
+The repo is initialised and committed on `main`. See **[GITHUB.md](GITHUB.md)** for the full
+walkthrough — creating a **fine-grained** personal access token (Contents: Read and write),
+pushing without ever writing the token to disk, the common error messages, and turning on
+GitHub Pages.
+
+```bash
+read -rsp "GitHub token: " GH_TOKEN && export GH_TOKEN && echo
+./tools/deploy.sh <your-username> <repo-name>
+```
+
 ## Files
 
 ```
@@ -65,6 +77,8 @@ tools/src-v2.html                 ← readable source (references build/v2/*.web
 tools/make.py                     ← inlines font + images → index.html
 tools/prep_images.py              ← rebuilds build/v2 from assets (incl. the chroma key)
 tools/render.py                   ← screenshot helper (Playwright)
+tools/deploy.sh                   ← one-shot push with a PAT (no token on disk)
+GITHUB.md                         ← token + push walkthrough
 build/v2/                         ← optimised webp photography
 assets/                           ← original generated image masters
 fonts/v2/poppins.css              ← embedded Poppins (base64 woff2)
