@@ -1,0 +1,31 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*~
+.vscode/
+.idea/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+
+# playwright / test artefacts
+.playwright-cli/
+node_modules/
+
+# the user's upload, not part of the site
+uploads/
+
+# credentials — never commit these
+.env
+.env.*
+.netrc
+.git-credentials
+*.pem
+*.key
+
+# agent sandbox caches (never commit)
+.cache/
+.local/
+.sudo_as_admin_successful

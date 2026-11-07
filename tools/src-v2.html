@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pixelspark — We Serve Delicious Food</title>
+<!--FONTS-->
+<style>
+/* ============================================================
+   TOKENS — sampled from the reference mockup
+   ============================================================ */
+:root{
+  --orange:#FE9F05;          /* the wedge / accent, sampled #FE9F05 */
+  --orange-2:#FFB53D;
+  --orange-ink:#F09200;
+  --ink:#222222;
+  --ink-2:#4A4A4A;
+  --ink-3:#6E6E6E;
+  --paper:#FFFFFF;
+  --paper-2:#FAFAFA;
+  --line:#ECECEC;
+  --nav-h:66px;
+  --page:min(1180px,100%);
+  --font:'Poppins','Segoe UI',system-ui,-apple-system,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-io:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{display:block;max-width:100%;-webkit-user-drag:none;user-select:none}
+[hidden]{display:none!important}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--orange);color:#fff}
+.wrap{width:min(1240px,90vw);margin-inline:auto}
+
+/* scrollbar */
+::-webkit-scrollbar{width:9px}
+::-webkit-scrollbar-track{background:#fff}
+::-webkit-scrollbar-thumb{background:#e6e6e6;border-radius:99px;border:3px solid #fff}
+::-webkit-scrollbar-thumb:hover{background:var(--orange)}
+
+/* scroll progress */
+#progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:130;
+  background:linear-gradient(90deg,var(--orange),var(--orange-2));transform:scaleX(0);transform-origin:0 50%}
+
+/* ============================================================
+   REVEAL
+   ============================================================ */
+[data-rv]{will-change:transform,opacity}
+[data-rv="up"]{opacity:0;transform:translate3d(0,30px,0)}
+[data-rv="left"]{opacity:0;transform:translate3d(-40px,0,0)}
+[data-rv="right"]{opacity:0;transform:translate3d(40px,0,0)}
+[data-rv="zoom"]{opacity:0;transform:scale(.93)}
+[data-rv].in{opacity:1;transform:none;
+  transition:opacity .8s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0ms)}
+
+/* ============================================================
+   NAV — flat, orange on the right half, exactly like the mockup
+   ============================================================ */
+.nav{position:fixed;inset:0 0 auto 0;z-index:100;height:var(--nav-h)}
+.nav-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.nav-bg svg{position:absolute;inset:0;width:100%;height:100%}
+.nav.solid .nav-bg::after{
+  content:'';position:absolute;inset:0;background:rgba(255,255,255,.9);
+  backdrop-filter:blur(14px) saturate(160%);opacity:0;transition:opacity .45s var(--ease-io);
+}
+.nav.solid .nav-bg::after{opacity:1}
+.nav-in{position:relative;z-index:2;height:100%;width:min(1240px,90vw);margin-inline:auto;
+  display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:clamp(19px,1.6vw,21px);letter-spacing:-.3px;color:#1b1b1b}
+.logo .mark{width:26px;height:26px;flex:0 0 auto;display:grid;place-items:center}
+.logo .mark svg{width:26px;height:26px}
+.nav-links{display:flex;align-items:center;gap:clamp(20px,2.4vw,36px);font-size:clamp(13px,1.1vw,14.5px);font-weight:500;color:#1f1f1f}
+.nav-links a{position:relative;padding:5px 0;transition:color .3s}
+.nav-links a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1.6px;background:#1f1f1f;
+  transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);transform-origin:left}
+.nav-tools{display:flex;align-items:center;gap:14px}
+.icon-btn{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;transition:background .3s,transform .3s}
+.icon-btn svg{width:17px;height:17px;stroke:#1b1b1b;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.icon-btn:hover{background:rgba(255,255,255,.45);transform:translateY(-2px)}
+.cart{position:relative}
+.cart .dot{position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 1.5px var(--orange)}
+.burger{display:none;width:36px;height:36px;place-items:center;border-radius:10px}
+.burger span{display:block;width:18px;height:2px;background:#1b1b1b;border-radius:2px;margin:2.5px 0;
+  transition:transform .4s var(--ease),opacity .3s}
+.nav.open .burger span:nth-child(1){transform:translateY(5px) rotate(45deg)}
+.nav.open .burger span:nth-child(2){opacity:0}
+.nav.open .burger span:nth-child(3){transform:translateY(-5px) rotate(-45deg)}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{position:relative;min-height:clamp(520px,60vw,660px);display:flex;align-items:center;
+  padding:calc(var(--nav-h) + 10px) 0 0;overflow:hidden;background:#fff}
+.hero-wedge{position:absolute;inset:0 0 0 0;z-index:0;pointer-events:none}
+.hero-wedge svg{position:absolute;inset:0;width:100%;height:100%;display:block;will-change:transform}
+.hero-grid{position:relative;z-index:2;width:min(1240px,90vw);margin-inline:auto;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:16px}
+
+.hero-copy{padding-block:10px}
+.eyebrow{display:flex;align-items:center;gap:9px;font-size:clamp(13px,1.15vw,15px);font-weight:400;color:var(--orange);
+  margin-bottom:20px;letter-spacing:.01em}
+.eyebrow::before{content:'';width:18px;height:1.5px;background:var(--orange);border-radius:2px;
+  transform-origin:left}
+.hero h1{margin:0;font-size:clamp(36px,5.35vw,68px);line-height:1.26;font-weight:600;color:#141414;
+  letter-spacing:-1.8px}
+.hero h1 .row{display:block;overflow:hidden}
+.hero h1 .row > span{display:block;transform:translateY(115%)}
+.hero h1 em{font-style:normal;color:var(--orange);font-weight:600}
+.hero-sub{margin:24px 0 28px;max-width:430px;font-size:clamp(12.5px,1.08vw,14.5px);line-height:1.85;color:#3a3a3a;font-weight:400}
+.hero-sub span{display:block;overflow:hidden}
+.hero-sub span i{display:block;font-style:normal;transform:translateY(110%)}
+
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:clamp(38px,3.4vw,46px);padding:0 clamp(22px,2.4vw,34px);border-radius:99px;
+  font-size:clamp(12px,1.1vw,14px);font-weight:500;letter-spacing:.01em;
+  overflow:hidden;isolation:isolate;transition:transform .5s var(--ease),box-shadow .5s var(--ease),color .4s}
+.btn-primary{background:var(--orange);color:#fff;box-shadow:0 10px 22px rgba(254,159,5,.34)}
+.btn-primary::before{content:'';position:absolute;inset:0;z-index:-1;background:#1f1f1f;
+  transform:translateY(101%);transition:transform .55s var(--ease)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 30px rgba(254,159,5,.4)}
+.btn-primary:hover::before{transform:translateY(0)}
+.btn-link{height:clamp(38px,3.2vw,44px);padding:0 clamp(22px,2.2vw,30px);border-radius:99px;box-shadow:inset 0 0 0 1px var(--orange);
+  background:#fff;color:#2b2b2b;font-size:11.5px;font-weight:400;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:background .4s,color .4s,transform .4s var(--ease),box-shadow .4s}
+.btn-link:hover{background:var(--orange);color:#fff;transform:translateY(-2px);box-shadow:0 12px 24px rgba(254,159,5,.28)}
+
+/* ---------- hero stage: big plate + 3 satellites ---------- */
+.stage{position:relative;width:100%;aspect-ratio:505/500;max-width:520px;justify-self:center;
+  touch-action:pan-y;cursor:grab;user-select:none}
+.stage.dragging{cursor:grabbing}
+.plate{position:absolute;left:50%;top:47%;width:78%;aspect-ratio:1/1;transform:translate(-50%,-50%);
+  border-radius:50%;overflow:hidden;background:#fff;
+  box-shadow:0 26px 60px rgba(120,60,0,.18),0 0 0 10px rgba(255,255,255,.96),0 0 0 11px rgba(0,0,0,.04);
+  will-change:transform}
+.plate img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+  transform:scale(1.16) rotate(-5deg);transition:opacity .8s var(--ease),transform 1.1s var(--ease)}
+.plate img.on{opacity:1;transform:scale(1) rotate(0)}
+.plate-sheen{position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:5;
+  background:linear-gradient(130deg,rgba(255,255,255,.45),rgba(255,255,255,0) 45%);mix-blend-mode:screen}
+
+/* the three smaller plates — positioned to match the mockup */
+.sat{position:absolute;border-radius:50%;overflow:hidden;background:#fff;
+  box-shadow:0 14px 28px rgba(90,45,0,.22),0 0 0 3px #fff;cursor:pointer;
+  will-change:transform,width,height;transition:box-shadow .4s}
+.sat img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease),opacity .5s}
+.sat::after{content:'';position:absolute;inset:0;border-radius:50%;background:rgba(255,255,255,.12);
+  opacity:1;transition:opacity .5s}
+.sat.active::after{opacity:0}
+.sat.active{box-shadow:0 18px 34px rgba(90,45,0,.28),0 0 0 3px #fff,0 0 0 5px var(--orange)}
+.sat:hover img{transform:scale(1.07)}
+.sat:hover{box-shadow:0 18px 34px rgba(90,45,0,.3),0 0 0 3px #fff,0 0 0 5px rgba(30,30,30,.55)}
+
+/* dish readout + dots */
+.dish-tag{position:absolute;z-index:22;left:50%;bottom:-2%;transform:translate(-50%,0);
+  display:flex;align-items:center;gap:12px;padding:7px 8px 7px 16px;border-radius:99px;
+  background:rgba(255,255,255,.78);backdrop-filter:blur(12px) saturate(160%);
+  box-shadow:0 12px 28px rgba(90,45,0,.16),inset 0 0 0 1px rgba(255,255,255,.75);white-space:nowrap}
+.dish-tag .name{font-size:12.5px;font-weight:600;color:#1d1d1d}
+.dish-tag .price{font-size:11.5px;font-weight:600;color:#fff;padding:5px 12px;border-radius:99px;background:var(--orange)}
+.dish-tag.swap .name,.dish-tag.swap .price{animation:tagIn .45s var(--ease) both}
+@keyframes tagIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.dots{position:absolute;z-index:22;left:50%;bottom:-26px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:7px}
+.dots button{width:7px;height:7px;border-radius:50%;background:transparent;box-shadow:inset 0 0 0 1.4px var(--orange);
+  transition:all .45s var(--ease)}
+.dots button.on{background:var(--orange);box-shadow:inset 0 0 0 1.4px var(--orange);transform:scale(1.15)}
+.swipe-hint{position:absolute;z-index:22;right:-2%;top:1%;display:flex;align-items:center;gap:7px;
+  font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#8a5200;
+  transition:opacity .5s}
+.swipe-hint svg{animation:nudge 2.2s var(--ease-io) infinite}
+@keyframes nudge{0%,100%{transform:translateX(-3px)}50%{transform:translateX(3px)}}
+
+/* soft confetti dots inside the wedge area */
+.bit{position:absolute;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle at 33% 30%,#fff,var(--orange) 58%,#e88700);opacity:.5;will-change:transform}
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about{padding:clamp(64px,8.6vw,124px) 0 clamp(56px,7.4vw,104px)}
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.06fr);
+  gap:clamp(24px,5vw,64px);align-items:center}
+.about-art{position:relative;aspect-ratio:1/.92;width:100%;max-width:460px;margin-inline:auto}
+.about-art .tab{position:absolute;left:2%;top:1%;width:56%;height:auto;will-change:transform}
+.about-art .dish{position:absolute;left:8%;top:8%;width:76%;aspect-ratio:1/1;border-radius:50%;
+  overflow:hidden;background:#fff;box-shadow:0 18px 40px rgba(40,20,0,.2);will-change:transform}
+.about-art .dish img{width:100%;height:100%;object-fit:cover}
+.about-art .bottle{position:absolute;left:0;bottom:6%;width:20.5%;will-change:transform;
+  filter:drop-shadow(0 16px 22px rgba(60,20,0,.28))}
+.about-copy h2{margin:0 0 18px;font-size:clamp(27px,3.1vw,40px);font-weight:600;letter-spacing:-1px}
+.about-copy h2 em{font-style:normal;color:var(--orange)}
+.about-copy p{margin:0 0 26px;font-size:clamp(12.5px,1.05vw,14.5px);line-height:1.95;color:#3f3f3f;max-width:560px}
+
+/* ============================================================
+   MOST POPULAR FOOD
+   ============================================================ */
+.popular{padding:clamp(54px,7vw,100px) 0 clamp(72px,9.4vw,130px)}
+.sec-head{text-align:center}
+.sec-head h2{margin:0;font-size:clamp(28px,3.75vw,46px);font-weight:600;letter-spacing:-1.2px;color:#141414}
+.sec-head h2 em{font-style:normal;color:var(--orange)}
+.popular .sec-head{margin-bottom:clamp(28px,3.8vw,52px)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.2vw,30px);align-items:start}
+.card{background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(20,20,20,.055);
+  overflow:hidden;position:relative;transition:transform .7s var(--ease),box-shadow .7s var(--ease);
+  will-change:transform}
+.card:hover{transform:translateY(-10px);box-shadow:0 26px 52px rgba(20,20,20,.13)}
+.card .shot{position:relative;overflow:hidden;background:#f2f2f2}
+.card .shot img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s var(--ease)}
+.card:hover .shot img{transform:scale(1.07)}
+.card .shot.thin{aspect-ratio:4/3.05}
+.card.feature{margin-top:-26px;padding-top:0;box-shadow:0 18px 44px rgba(20,20,20,.11)}
+.card.feature:hover{transform:translateY(-14px)}
+.card.feature .shot{aspect-ratio:4/3.05}
+.card .body{padding:clamp(13px,1.3vw,18px) clamp(14px,1.4vw,20px) clamp(15px,1.5vw,20px)}
+.card .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card h3{margin:0;font-size:clamp(14px,1.25vw,17px);font-weight:600;letter-spacing:-.3px;color:#1b1b1b}
+.add-cart{height:clamp(24px,2vw,29px);padding:0 clamp(12px,1.2vw,17px);border-radius:99px;background:var(--orange);color:#fff;
+  font-size:clamp(9.5px,.85vw,11.5px);font-weight:500;letter-spacing:.02em;white-space:nowrap;
+  box-shadow:0 6px 14px rgba(254,159,5,.32);transition:transform .4s var(--ease),background .3s}
+.add-cart:hover{transform:translateY(-2px);background:#f09200}
+.card .meta{display:flex;align-items:center;justify-content:space-between;margin-top:clamp(12px,1.3vw,18px)}
+.stars{display:flex;gap:2.5px}
+.stars svg{width:clamp(11px,1vw,13px);height:clamp(11px,1vw,13px);fill:var(--orange)}
+.card .price{font-size:clamp(11px,1vw,13px);font-weight:600;color:#1b1b1b}
+.cards-pager{display:flex;justify-content:center;gap:8px;margin-top:clamp(22px,3vw,40px)}
+.cards-pager i{width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1.4px var(--orange);transition:all .4s var(--ease)}
+.cards-pager i.on{background:var(--orange);transform:scale(1.15)}
+
+/* ============================================================
+   WHY CHOOSE
+   ============================================================ */
+.why{padding:clamp(54px,7vw,100px) 0 clamp(72px,9.4vw,130px);background:var(--paper-2)}
+.why .sec-head{margin-bottom:clamp(28px,3.8vw,52px)}
+.why-grid{display:grid;grid-template-columns:1fr 1.16fr 1fr;gap:clamp(14px,2vw,26px);align-items:center}
+.why-card{padding:6px 10px;text-align:left}
+.why-card .ico{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;margin:0 0 18px;
+  background:rgba(254,159,5,.13);color:var(--orange-ink);transition:transform .6s var(--ease),background .4s}
+.why-card .ico svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.why-card h3{margin:0 0 12px;font-size:clamp(15px,1.4vw,19px);font-weight:600;color:#1b1b1b;letter-spacing:-.3px}
+.why-card p{margin:0;font-size:clamp(11.5px,1vw,13.5px);line-height:1.95;color:#545454;max-width:270px}
+.why-card:hover .ico{transform:translateY(-4px) rotate(-6deg);background:rgba(254,159,5,.22)}
+.why-card.mid{background:#fff;border-radius:16px;padding:clamp(28px,3vw,44px) clamp(20px,2.2vw,32px) clamp(34px,3.6vw,52px);
+  box-shadow:0 18px 46px rgba(20,20,20,.09)}
+.why-card.mid .ico{background:rgba(254,159,5,.2);width:44px;height:44px}
+.why-card.mid h3{font-size:clamp(16px,1.5vw,20px)}
+
+/* ============================================================
+   CUSTOMERS SAY
+   ============================================================ */
+.say{padding:clamp(62px,8vw,112px) 0 clamp(80px,10vw,150px);overflow:hidden}
+.say .sec-head{margin-bottom:clamp(30px,4vw,56px)}
+.say-grid{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);
+  gap:clamp(24px,4vw,54px);align-items:center}
+.q-user{display:flex;align-items:center;gap:14px}
+.q-user img{width:46px;height:46px;border-radius:50%;object-fit:cover;flex:0 0 auto;
+  box-shadow:0 8px 18px rgba(0,0,0,.14)}
+.q-user h3{margin:0;font-size:clamp(22px,2.9vw,36px);font-weight:600;letter-spacing:-1px;color:#141414}
+.q-stars{display:flex;gap:3px;margin:14px 0 18px}
+.q-stars svg{width:clamp(12px,1.1vw,14px);height:clamp(12px,1.1vw,14px);fill:var(--orange)}
+.quote{margin:0;font-size:clamp(12.5px,1.1vw,15px);line-height:2;color:#3d3d3d;max-width:470px;min-height:104px}
+.q-nav{display:flex;align-items:center;gap:12px;margin-top:26px}
+.q-arrow{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;color:#2b2b2b;
+  transition:background .35s,color .35s,transform .4s var(--ease)}
+.q-arrow svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.q-arrow:hover{background:#f1f1f1;transform:translateX(1px)}
+.q-arrow.prev:hover{transform:translateX(-1px)}
+.q-faces{display:flex;align-items:center;gap:9px}
+.q-faces button{width:30px;height:30px;border-radius:50%;overflow:hidden;padding:0;opacity:.6;
+  box-shadow:0 0 0 1.5px transparent;transition:all .45s var(--ease)}
+.q-faces button img{width:100%;height:100%;object-fit:cover}
+.q-faces button:hover{opacity:1;transform:translateY(-2px)}
+.q-faces button.on{opacity:1;width:36px;height:36px;box-shadow:0 0 0 1.5px var(--orange)}
+.say-art{position:relative;aspect-ratio:1/.9;width:100%;max-width:430px;margin-inline:auto}
+.say-art .tab{position:absolute;right:0;top:0;width:66%;will-change:transform}
+.say-art .dish{position:absolute;left:2%;top:14%;width:66%;aspect-ratio:1/1;border-radius:50%;
+  overflow:hidden;background:#fff;box-shadow:0 20px 44px rgba(40,20,0,.24),0 0 0 6px #fff;will-change:transform}
+.say-art .dish img{width:100%;height:100%;object-fit:cover}
+.say-art .bottle{position:absolute;right:12%;bottom:4%;width:17%;will-change:transform;
+  filter:drop-shadow(0 16px 22px rgba(60,20,0,.26))}
+
+/* ============================================================
+   FOOTER  — LIGHT, exactly like the mockup
+   ============================================================ */
+.foot{position:relative;padding:clamp(64px,8.4vw,118px) 0 0;overflow:hidden;background:#fff}
+.foot-grid{display:grid;grid-template-columns:1.15fr 1fr 1.05fr 1.05fr;
+  gap:clamp(20px,3vw,40px);position:relative;z-index:3}
+.foot .logo{margin-bottom:14px}
+.foot h4{margin:0 0 18px;font-size:clamp(13px,1.2vw,16px);font-weight:600;color:#1b1b1b}
+.foot p,.foot li{font-size:clamp(11.5px,1.02vw,13.5px);line-height:2.05;color:#3f3f3f}
+.foot ul{list-style:none;margin:0;padding:0}
+.foot .hours li{display:flex;gap:4px;max-width:250px}
+.sub-form{display:flex;align-items:center;height:42px;border-radius:99px;background:#fff;
+  box-shadow:inset 0 0 0 1px var(--orange);padding:3px;transition:box-shadow .4s}
+.sub-form:focus-within{box-shadow:inset 0 0 0 1.5px var(--orange),0 0 0 4px rgba(254,159,5,.13)}
+.sub-form input{flex:1;min-width:0;border:0;outline:none;background:none;font:inherit;
+  font-size:clamp(11.5px,1vw,13px);color:#2b2b2b;padding:0 14px}
+.sub-form input::placeholder{color:#9a9a9a}
+.sub-form button{width:34px;height:34px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--orange);color:#fff;transition:transform .4s var(--ease),box-shadow .4s}
+.sub-form button svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sub-form button:hover{transform:scale(1.07) rotate(10deg);box-shadow:0 8px 18px rgba(254,159,5,.45)}
+.foot-bottom{position:relative;z-index:3;margin-top:clamp(34px,4.6vw,56px);padding:18px 0 22px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  font-size:clamp(10.5px,.95vw,12.5px);color:#8a8a8a}
+.foot-plate{position:absolute;left:-4%;bottom:-16%;width:180px;z-index:1;
+  border-radius:50%;overflow:hidden;will-change:transform;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 60%,transparent 100%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 60%,transparent 100%)}
+.foot-plate img{width:100%}
+.foot-bits{position:absolute;right:-1%;bottom:2%;width:150px;z-index:1;will-change:transform;opacity:.95}
+.foot-bits img{width:100%;height:auto}
+
+/* ============================================================
+   TOAST / MOBILE MENU
+   ============================================================ */
+.toast{position:fixed;left:50%;bottom:26px;z-index:200;transform:translate(-50%,140%);
+  display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:99px;
+  background:#1c1c1c;color:#fff;font-size:12px;font-weight:500;
+  box-shadow:0 20px 44px rgba(0,0,0,.32);visibility:hidden;opacity:0;
+  transition:transform .6s var(--ease),opacity .4s,visibility .4s}
+.toast.show{transform:translate(-50%,0);visibility:visible;opacity:1}
+.toast .tick{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--orange)}
+.toast .tick svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.mobile-menu{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;justify-content:center;
+  padding:0 8vw;clip-path:circle(0% at 92% 5%);transition:clip-path .8s var(--ease);
+  background:radial-gradient(ellipse 70% 44% at 100% 0%,rgba(254,159,5,.18),transparent 70%),#fff}
+.nav.open ~ .mobile-menu{clip-path:circle(150% at 92% 5%)}
+.mobile-menu a{display:flex;align-items:center;justify-content:space-between;padding:12px 0;
+  font-size:clamp(24px,7.6vw,36px);font-weight:600;letter-spacing:-1.2px;color:#1b1b1b;
+  opacity:0;transform:translateY(18px);
+  transition:opacity .5s var(--ease),transform .5s var(--ease),color .3s}
+.mobile-menu a span{font-size:11px;font-weight:500;color:var(--orange);letter-spacing:0}
+.nav.open ~ .mobile-menu a{opacity:1;transform:none}
+.nav.open ~ .mobile-menu a:nth-child(1){transition-delay:.15s}
+.nav.open ~ .mobile-menu a:nth-child(2){transition-delay:.21s}
+.nav.open ~ .mobile-menu a:nth-child(3){transition-delay:.27s}
+.nav.open ~ .mobile-menu a:nth-child(4){transition-delay:.33s}
+.nav.open ~ .mobile-menu a:nth-child(5){transition-delay:.39s}
+body.locked{overflow:hidden}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1024px){
+  .nav-links{display:none}
+  .burger{display:grid}
+  .hero{min-height:auto;padding:calc(var(--nav-h) + 6px) 0 50px;align-items:flex-start}
+  /* stacked: plate block first, copy sits on white below the orange band */
+  .hero-grid{display:flex;flex-direction:column;gap:0}
+  .stage{order:-1;max-width:min(520px,94vw);aspect-ratio:1/.95;margin:0 auto}
+  .hero-copy{order:1;text-align:center;padding:46px 0 0}
+  .hero .eyebrow{justify-content:center;margin-bottom:14px}
+  .hero-sub{margin-inline:auto;max-width:430px}
+  .hero h1{font-size:clamp(30px,7.4vw,44px);letter-spacing:-1.2px}
+  .hero-wedge svg{inset:-8% -22% auto -22%;width:144%;height:66%}
+  .about-grid{grid-template-columns:1fr;gap:34px}
+  .about-copy{text-align:center}
+  .about-copy p{margin-inline:auto}
+  .cards{grid-template-columns:1fr;gap:20px}
+  .why-grid{grid-template-columns:1fr;gap:12px}
+  .why-card.mid{order:-1}
+  .say-grid{grid-template-columns:1fr;gap:34px}
+  .say-art{order:-1;max-width:320px}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .swipe-hint{display:none}
+}
+@media (max-width:640px){
+  .plate{width:70%;top:48%}
+  .hero h1{font-size:clamp(28px,8.4vw,38px)}
+  .dish-tag{bottom:0}
+  .dots{bottom:-22px}
+  .foot-grid{grid-template-columns:1fr}
+  .foot-plate{width:130px;bottom:6%;left:-12%;opacity:.6}
+  .foot-bits{width:110px;right:-6%;bottom:0}
+  .foot-bottom{flex-direction:column;gap:6px;padding-bottom:30px}
+  .quote{min-height:0}
+  .cards-pager{margin-top:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  html{scroll-behavior:auto}
+  [data-rv]{opacity:1 !important;transform:none !important}
+  .hero h1 .row > span,.hero-sub span i{transform:none !important}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- ================= NAV ================= -->
+<nav class="nav" id="nav">
+  <div class="nav-bg" aria-hidden="true">
+    <svg viewBox="0 0 1440 66" preserveAspectRatio="none">
+      <defs>
+        <clipPath id="navWedge"><path d="M0 0H1440V66H0Z"/></clipPath>
+      </defs>
+      <g clip-path="url(#navWedge)">
+        <path d="M700 0H1440V66H760C726 66 715 36 700 0Z" fill="#FE9F05"/>
+      </g>
+    </svg>
+  </div>
+  <div class="nav-in">
+    <a href="#top" class="logo">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M7 4h18v7a9 9 0 0 1-18 0V4Z" stroke="#FE9F05" stroke-width="2.6" stroke-linejoin="round"/>
+          <path d="M16 20v5" stroke="#FE9F05" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M11 27h10" stroke="#FE9F05" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      pixelspark
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#top" class="active">Home</a>
+      <a href="#about">About us</a>
+      <a href="#menu">Menu</a>
+      <a href="#say">Testimonials</a>
+      <a href="#contact">Contact us</a>
+    </div>
+    <div class="nav-tools">
+      <button class="icon-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="M15.8 15.8 21 21"/></svg>
+      </button>
+      <button class="icon-btn cart" aria-label="Cart">
+        <svg viewBox="0 0 24 24"><path d="M4.5 8.5h15l-1.4 10a2 2 0 0 1-2 1.7H7.9a2 2 0 0 1-2-1.7l-1.4-10Z"/><path d="M9 8.5V6.6a3 3 0 0 1 6 0v1.9"/></svg>
+        <span class="dot"></span>
+      </button>
+      <button class="burger icon-btn" id="burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#top">Home <span>01</span></a>
+  <a href="#about">About us <span>02</span></a>
+  <a href="#menu">Menu <span>03</span></a>
+  <a href="#say">Testimonials <span>04</span></a>
+  <a href="#contact">Contact us <span>05</span></a>
+</div>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="hero-wedge" aria-hidden="true">
+    <!-- the organic orange wedge from the mockup -->
+    <svg id="wedgeSvg" viewBox="0 0 1000 685" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="wg" x1="0" y1="0" x2=".9" y2="1">
+          <stop offset="0" stop-color="#FFB02A"/>
+          <stop offset=".5" stop-color="#FE9F05"/>
+          <stop offset="1" stop-color="#F79400"/>
+        </linearGradient>
+      </defs>
+      <path id="wedgePath" fill="url(#wg)"
+        d="M280 0C283 10 294 40 300 60C306 80 312 100 315 120C318 140 317 160 320 180C323 200 328 220 335 240C342 260 346 280 360 300C374 320 393 340 420 360C447 380 480 400 520 420C560 440 593 460 660 480C727 500 863 523 920 540C977 557 987 575 1000 582 L1000 0 L280 0 Z"/>
+    </svg>
+    <span class="bit" style="width:7px;height:7px;left:38%;top:16%"></span>
+    <span class="bit" style="width:5px;height:5px;left:30%;top:72%"></span>
+    <span class="bit" style="width:9px;height:9px;left:56%;top:8%"></span>
+    <span class="bit" style="width:6px;height:6px;left:86%;top:92%"></span>
+  </div>
+
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow"><span>Restaurant</span></div>
+      <h1 id="heroTitle">
+        <span class="row"><span>We Serve</span></span>
+        <span class="row"><span>Delicious <em>Food</em></span></span>
+      </h1>
+      <p class="hero-sub">
+        <span><i>Keep it easy with those simple but delicious recipes</i></span>
+        <span><i>From make -ahead lunches and midweek meals to</i></span>
+        <span><i>fuss -free sides</i></span>
+      </p>
+      <a href="#menu" class="btn btn-primary" data-ripple>Get started</a>
+    </div>
+
+    <div class="stage" id="stage" role="region" tabindex="0"
+         aria-roledescription="carousel" aria-label="Signature dishes — swipe to browse">
+      <div class="plate" id="plate">
+        <img src="build/v2/hero-satay.webp" alt="Chicken satay skewers on a white plate" id="i-hero" class="on">
+        <img src="build/v2/small-prawn.webp" alt="Spicy prawn stir fry" id="i-prawn" draggable="false">
+        <img src="build/v2/small-grill.webp" alt="Mixed grill platter" id="i-grill" draggable="false">
+        <img src="build/v2/small-meatballs.webp" alt="Saucy meatballs" id="i-balls" draggable="false">
+        <div class="plate-sheen"></div>
+      </div>
+
+      <!-- three satellites, positioned like the reference -->
+      <button class="sat" id="sat0" aria-label="Prawn stir fry"><img data-reuse="i-prawn" alt=""></button>
+      <button class="sat" id="sat1" aria-label="Mixed grill platter"><img data-reuse="i-grill" alt=""></button>
+      <button class="sat" id="sat2" aria-label="Saucy meatballs"><img data-reuse="i-balls" alt=""></button>
+
+      <div class="dish-tag" id="dishTag">
+        <span class="name">Chicken Satay Skewers</span>
+        <span class="price">$24.0</span>
+      </div>
+      <div class="dots" id="dots"></div>
+      <div class="swipe-hint">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg>
+        Swipe
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= ABOUT ================= -->
+<section class="about" id="about">
+  <div class="wrap about-grid">
+    <div class="about-art" data-rv="left">
+      <svg class="tab" data-parallax="-18" viewBox="0 0 300 330" fill="none" aria-hidden="true">
+        <path d="M46 0H300V330H92C50 330 26 300 26 258V172C26 128 0 104 0 62V0H46Z" fill="#FE9F05"/>
+      </svg>
+      <div class="dish" data-parallax="22" data-tilt><img src="build/v2/about-tacos.webp" alt="Tacos on a dark plate" id="i-tacos"></div>
+      <img class="bottle" src="build/v2/ketchup.webp" alt="Ketchup bottle" id="i-ketchup" data-parallax="44">
+    </div>
+    <div class="about-copy">
+      <h2 data-rv="up">About <em>Us</em></h2>
+      <p data-rv="up" style="--d:90ms">Keep healthy food readily available. When you get hungry, you're mroe likely to eat the first thing you see on the counter. Keep healthy food readily available. When you get hungry, you're mroe likely to eat the first thing you see on the counter. Keep healthy food readily available</p>
+      <a href="#menu" class="btn-link" data-rv="up" style="--d:180ms">View more</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MOST POPULAR FOOD ================= -->
+<section class="popular" id="menu">
+  <div class="wrap">
+    <div class="sec-head"><h2 data-rv="up">Most Popular <em>Food</em></h2></div>
+    <div class="cards">
+      <article class="card" data-rv="up" data-tilt>
+        <div class="shot thin"><img src="build/v2/breakfast.webp" alt="Breakfast food" id="i-breakfast"></div>
+        <div class="body">
+          <div class="row"><h3>Breakfast food</h3><button class="add-cart">Add to cart</button></div>
+          <div class="meta">
+            <div class="stars">
+              <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg>
+            </div>
+            <span class="price">$120.4</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card feature" data-rv="up" style="--d:100ms" data-tilt>
+        <div class="shot"><img src="build/v2/lunch-tray.webp" alt="Lunch food platter"></div>
+        <div class="body">
+          <div class="row"><h3>Lunch food</h3><button class="add-cart">Add to cart</button></div>
+          <div class="meta">
+            <div class="stars">
+              <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg>
+            </div>
+            <span class="price">$220.4</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" data-rv="up" style="--d:200ms" data-tilt>
+        <div class="shot thin"><img src="build/v2/dinner-board.webp" alt="Dinner food"></div>
+        <div class="body">
+          <div class="row"><h3>Dinner food</h3><button class="add-cart">Add to cart</button></div>
+          <div class="meta">
+            <div class="stars">
+              <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg>
+            </div>
+            <span class="price">$250.4</span>
+          </div>
+        </div>
+      </article>
+    </div>
+    <div class="cards-pager" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+  </div>
+</section>
+
+<!-- ================= WHY CHOOSE ================= -->
+<section class="why">
+  <div class="wrap">
+    <div class="sec-head"><h2 data-rv="up">Why choose our <em>Food</em></h2></div>
+    <div class="why-grid">
+      <div class="why-card" data-rv="up">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4 4 0 0 1-8 0L7 3Z"/><path d="M12 13.4V21"/><path d="M8.5 21h7"/><path d="M6.2 3h11.6"/></svg></div>
+        <h3>Quality Food</h3>
+        <p>Keep healthy food readily available. When you get hungry you're more likely to eat</p>
+      </div>
+      <div class="why-card mid" data-rv="up" style="--d:100ms">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 10h16l-1.6 8.4a2 2 0 0 1-2 1.6H7.6a2 2 0 0 1-2-1.6L4 10Z"/><path d="M8.5 10 12 4l3.5 6"/><path d="M9 14.5h6"/></svg></div>
+        <h3>Super Taste</h3>
+        <p>Keep healthy food restate available. When you get hungry, you're moe likely to eat</p>
+      </div>
+      <div class="why-card" data-rv="up" style="--d:200ms">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M2 16.5V8.2l7-3.2v11.5z"/><path d="M9 10.4l4.6-2 8.4 3.4v4.7l-6 2.4V14"/><path d="M2 16.5l7 2.4 6-2.4"/><circle cx="6" cy="18.6" r="1.7"/><circle cx="17.4" cy="18.6" r="1.7"/></svg></div>
+        <h3>Fast Delivery</h3>
+        <p>Keep healthy food readily available. When you get hungry, you're moe kely to eat</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CUSTOMERS SAY ================= -->
+<section class="say" id="say">
+  <div class="wrap">
+    <div class="sec-head"><h2 data-rv="up">Customers <em>Say</em></h2></div>
+    <div class="say-grid">
+      <div data-rv="up">
+        <div class="q-user">
+          <img id="qAvatar" src="build/v2/portrait-mary.webp" alt="">
+          <h3 id="qName">Mary Lukach</h3>
+        </div>
+        <div class="q-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg>
+        </div>
+        <p class="quote" id="qText">"Keep healthy food readily available. When you get hungry, you're more likely to eat Keep healthy food readily available. When you get hungry, you're more likely to eat"</p>
+        <div class="q-nav">
+          <button class="q-arrow prev" id="qPrev" aria-label="Previous review"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+          <div class="q-faces" id="qFaces">
+            <button data-q="0"><img src="build/v2/portrait-1.webp" alt=""></button>
+            <button class="on" data-q="1"><img src="build/v2/portrait-mary.webp" alt=""></button>
+            <button data-q="2"><img src="build/v2/portrait-2.webp" alt=""></button>
+          </div>
+          <button class="q-arrow" id="qNext" aria-label="Next review"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="say-art" data-rv="right">
+        <svg class="tab" data-parallax="-20" viewBox="0 0 300 300" fill="none" aria-hidden="true">
+          <path d="M60 0H300V300H150C90 300 60 270 60 210V0Z" fill="#FE9F05"/>
+        </svg>
+        <div class="dish" data-parallax="20" data-tilt><img data-reuse="i-hero" alt="Signature satay plate"></div>
+        <img class="bottle" data-reuse="i-ketchup" alt="Ketchup bottle" data-parallax="38">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER (light) ================= -->
+<footer class="foot" id="contact">
+  <div class="foot-plate" data-parallax="-30"><img data-reuse="i-hero" alt=""></div>
+  <div class="foot-bits" data-parallax="26"><img data-reuse="i-chicken" alt=""></div>
+
+  <div class="wrap">
+    <div class="foot-grid">
+      <div data-rv="up">
+        <a href="#top" class="logo">
+          <span class="mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M7 4h18v7a9 9 0 0 1-18 0V4Z" stroke="#FE9F05" stroke-width="2.6" stroke-linejoin="round"/>
+              <path d="M16 20v5" stroke="#FE9F05" stroke-width="2.6" stroke-linecap="round"/>
+              <path d="M11 27h10" stroke="#FE9F05" stroke-width="2.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          pixelspark
+        </a>
+      </div>
+
+      <div data-rv="up" style="--d:80ms">
+        <h4>Opening Hours</h4>
+        <ul class="hours">
+          <li>Mon–Fri: 09:00 AM 06:00PM</li>
+          <li>Saturday: 09:00 AM-04:00 PM</li>
+          <li>Sunday: Closed</li>
+        </ul>
+      </div>
+
+      <div data-rv="up" style="--d:150ms">
+        <h4>Contact us</h4>
+        <ul>
+          <li>543 Country Club Ave Wake Forest</li>
+          <li>NC 27587, London, UK.</li>
+          <li>+1259 745 1234</li>
+          <li>email@pixelspark.com</li>
+        </ul>
+      </div>
+
+      <div data-rv="up" style="--d:220ms">
+        <h4>Subscribe Us</h4>
+        <form class="sub-form" id="subForm">
+          <input type="email" placeholder="" aria-label="Email address" required>
+          <button type="submit" aria-label="Subscribe">
+            <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2026 pixelspark. All rights reserved.</span>
+      <span>Privacy · Terms · Cookies</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 13l4 4 10-10"/></svg></span><span id="toastMsg">Done</span></div>
+
+<img id="i-chicken" src="build/v2/fried-chicken.webp" alt="" hidden>
+
+<script>
+addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-reuse]').forEach(el => {
+    const src = document.getElementById(el.dataset.reuse);
+    if (src) el.src = src.currentSrc || src.src;
+  });
+});
+</script>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (s,c=document)=>c.querySelector(s);
+  const $$ = (s,c=document)=>[...c.querySelectorAll(s)];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ============ HERO CAROUSEL ============ */
+  const dishes = [
+    {name:'Chicken Satay Skewers', price:'$24.0', el:'i-hero'},
+    {name:'Spicy Prawn Stir Fry',  price:'$19.5', el:'i-prawn'},
+    {name:'Mixed Grill Platter',   price:'$32.0', el:'i-grill'},
+    {name:'Saucy Meatballs',       price:'$16.0', el:'i-balls'}
+  ];
+  const stage = $('#stage'), plate = $('#plate'), dotsWrap = $('#dots');
+  const sats = [ $('#sat0'), $('#sat1'), $('#sat2') ];
+  const plateImgs = $$('#plate img');
+  const tag = $('#dishTag'), tagName = $('.name', tag), tagPrice = $('.price', tag);
+  const N = dishes.length;
+  let index = 0, autoplay;
+
+  // the three satellites always show the *next three* dishes
+  const SAT_POS = [                       // measured off the reference mockup (% of stage box)
+    {l:87.5, t:18,  s:19.0},
+    {l:85,   t:55,  s:18.2},
+    {l:70,   t:77,  s:11.8}
+  ];
+
+  const dots = dishes.map((_,i)=>{
+    const b=document.createElement('button');
+    if(i===0) b.className='on';
+    b.setAttribute('aria-label','Dish '+(i+1));
+    b.addEventListener('click',()=>goTo(i));
+    dotsWrap.appendChild(b);
+    return b;
+  });
+
+  function placeSats(){
+    sats.forEach((el,k)=>{
+      const p = SAT_POS[k];
+      el.style.left = p.l+'%';
+      el.style.top  = p.t+'%';
+      el.style.width= p.s+'%';
+      el.style.height='auto';
+      el.style.aspectRatio='1/1';
+      el.style.transform = 'translate(-50%,-50%)';
+    });
+  }
+
+  function syncSats(){
+    sats.forEach((el,k)=>{
+      const target = document.getElementById(dishes[(index+k+1)%N].el);
+      const img = el.querySelector('img');
+      const src = target.currentSrc || target.src;
+      if(img.getAttribute('src') !== src) img.src = src;
+      el.classList.toggle('active', false);
+      el.setAttribute('aria-label', dishes[(index+k+1)%N].name);
+    });
+  }
+
+  function setActive(i){
+    index = (i+N)%N;
+    plateImgs.forEach((im,k)=>{ im.classList.toggle('on', k===index); });
+    dots.forEach((d,k)=>d.classList.toggle('on', k===index));
+    tag.classList.remove('swap'); void tag.offsetWidth;
+    tagName.textContent = dishes[index].name;
+    tagPrice.textContent = dishes[index].price;
+    tag.classList.add('swap');
+    syncSats();
+    if(!reduced){
+      plate.animate(
+        [{transform:'translate(-50%,-50%) scale(1)'},
+         {transform:'translate(-50%,-50%) scale(.955) rotate(-1.4deg)'},
+         {transform:'translate(-50%,-50%) scale(1)'}],
+        {duration:780, easing:'cubic-bezier(.22,1,.36,1)'});
+    }
+  }
+  const next = ()=>setActive(index+1);
+  const prev = ()=>setActive(index-1);
+  function goTo(i){ setActive(i); restart(); }
+
+  function restart(){
+    if(reduced) return;
+    clearInterval(autoplay);
+    autoplay = setInterval(()=>{ if(!document.hidden && !dragging) next(); }, 5600);
+  }
+
+  /* --- swipe / drag anywhere on the stage --- */
+  let dragX=null, dragging=false, moved=0;
+  const STEP = Math.max(140, stage.clientWidth*0.22);
+  stage.addEventListener('pointerdown', e=>{
+    if(e.button !== undefined && e.button !== 0) return;
+    dragging=true; moved=0; dragX=e.clientX; stage.classList.add('dragging');
+  });
+  stage.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    moved = e.clientX - dragX;
+  });
+  const release = ()=>{
+    if(!dragging) return;
+    dragging=false; stage.classList.remove('dragging');
+    if(Math.abs(moved) > STEP*0.55){ moved>0 ? prev() : next(); }
+    moved=0; restart();
+  };
+  stage.addEventListener('pointerup', release);
+  stage.addEventListener('pointercancel', release);
+  stage.addEventListener('lostpointercapture', release);
+  stage.addEventListener('pointerup', ()=>{}, true);
+
+  sats.forEach((el,k)=>el.addEventListener('click', e=>{ e.stopPropagation(); goTo((index+k+1)%N); }));
+  stage.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'){ e.preventDefault(); next(); }
+    if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
+  });
+  stage.addEventListener('mouseenter', ()=>clearInterval(autoplay));
+  stage.addEventListener('mouseleave', restart);
+
+  /* ============ NAV ============ */
+  const nav = $('#nav'), burger = $('#burger');
+  const onNav = ()=> nav.classList.toggle('solid', scrollY > 20);
+  addEventListener('scroll', onNav, {passive:true}); onNav();
+  burger.addEventListener('click', ()=>{
+    const open = nav.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open);
+    document.body.classList.toggle('locked', open);
+  });
+  $$('#mobileMenu a').forEach(a=>a.addEventListener('click', ()=>{
+    nav.classList.remove('open'); burger.setAttribute('aria-expanded','false');
+    document.body.classList.remove('locked');
+  }));
+
+  /* scroll spy */
+  const ids = ['top','about','menu','say','contact'];
+  const navAs = $$('#navLinks a');
+  const spy = ()=>{
+    const y = scrollY + innerHeight*.4;
+    let cur='top';
+    ids.forEach(id=>{ const el=document.getElementById(id); if(el && el.offsetTop<=y) cur=id; });
+    navAs.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+cur));
+  };
+  addEventListener('scroll', spy, {passive:true}); spy();
+
+  /* ============ PROGRESS ============ */
+  const prog = $('#progress');
+  const onProg = ()=>{
+    const h = document.documentElement.scrollHeight - innerHeight;
+    prog.style.transform = 'scaleX(' + (h>0 ? scrollY/h : 0) + ')';
+  };
+  addEventListener('scroll', onProg, {passive:true}); onProg();
+
+  /* ============ REVEALS ============ */
+  const io = new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:.15, rootMargin:'0px 0px -8% 0px'});
+  $$('[data-rv]').forEach(el=>io.observe(el));
+
+  /* ============ PARALLAX + TILT ============ */
+  const pxEls = $$('[data-parallax]'), tiltEls = $$('[data-tilt]');
+  let mx=0,my=0,tmx=0,tmy=0;
+  addEventListener('pointermove', e=>{
+    tmx = e.clientX/innerWidth-.5; tmy = e.clientY/innerHeight-.5;
+  }, {passive:true});
+  let ticking=false;
+  const loop = ()=>{
+    ticking=false;
+    mx += (tmx-mx)*.06; my += (tmy-my)*.06;
+    if(!reduced){
+      pxEls.forEach(el=>{
+        const r = el.getBoundingClientRect();
+        if(r.bottom<-160 || r.top>innerHeight+160) return;
+        const sp = parseFloat(el.dataset.parallax)||0;
+        const c = r.top + r.height/2 - innerHeight/2;
+        el.style.transform = 'translate3d(' + (mx*8).toFixed(2) + 'px,' + ((c/innerHeight)*sp).toFixed(2) + 'px,0)';
+      });
+      tiltEls.forEach(el=>{
+        const r = el.getBoundingClientRect();
+        if(r.bottom<-100 || r.top>innerHeight+100) return;
+        el.style.transform = 'perspective(900px) rotateY(' + (mx*7).toFixed(2) + 'deg) rotateX(' + (-my*7).toFixed(2) + 'deg)';
+      });
+      const wedge = $('#wedgePath');
+      if(wedge && scrollY < innerHeight*1.4){
+        wedge.setAttribute('transform',
+          'translate(' + (mx*18).toFixed(1) + ',' + (scrollY*0.12 + my*14).toFixed(1) + ')');
+      }
+      $$('.bit').forEach((b,i)=>{
+        b.style.transform = 'translate3d(' + (mx*(12+i*6)).toFixed(1) + 'px,' +
+          ((my*(12+i*6)) + Math.sin(Date.now()/1400 + i)*5).toFixed(1) + 'px,0)';
+      });
+    }
+  };
+  addEventListener('scroll', ()=>{ if(!ticking){ticking=true; requestAnimationFrame(loop);} }, {passive:true});
+  addEventListener('resize', ()=>{ if(!ticking){ticking=true; requestAnimationFrame(loop);} });
+  setInterval(()=>{ if(!ticking){ticking=true; requestAnimationFrame(loop);} }, 40);
+
+  /* ============ HERO ENTRANCE ============ */
+  addEventListener('load', ()=>{
+    $$('#heroTitle .row > span').forEach((s,i)=>{
+      s.style.transition = 'transform 1s cubic-bezier(.22,1,.36,1) ' + (0.12 + i*0.09) + 's';
+      s.style.transform = 'translateY(0)';
+    });
+    $$('.hero-sub span i').forEach((s,i)=>{
+      s.style.transition = 'transform .9s cubic-bezier(.22,1,.36,1) ' + (0.34 + i*0.07) + 's';
+      s.style.transform = 'translateY(0)';
+    });
+    const st = stage;
+    if(st.animate) st.animate(
+      [{opacity:0, transform:'scale(.9) translateY(18px)'},{opacity:1, transform:'none'}],
+      {duration:1100, delay:120, easing:'cubic-bezier(.22,1,.36,1)', fill:'both'});
+  });
+
+  /* ============ TESTIMONIALS ============ */
+  const reviews = [
+    {name:'Mary Lukach', avatar:'build/v2/portrait-mary.webp',
+     text:'"Keep healthy food readily available. When you get hungry, you\'re more likely to eat Keep healthy food readily available. When you get hungry, you\'re more likely to eat"'},
+    {name:'Daniel Okoro', avatar:'build/v2/portrait-1.webp',
+     text:'"The satay is unreal — charred at the edges and still steaming when it lands. Friday nights have quietly become pixelspark nights in our house."'},
+    {name:'Amara Bello', avatar:'build/v2/portrait-2.webp',
+     text:'"Portions are honest, plating is sharp and the delivery window is exactly what they promise. As a chef I am picky about both — they keep clearing the bar."'}
+  ];
+  let qi = 1;   // Mary is second in the strip, as in the mockup
+  const qText=$('#qText'), qName=$('#qName'), qAvatar=$('#qAvatar');
+  const qFaces = $$('#qFaces button');
+  qFaces.forEach(b=>b.classList.remove('on'));
+  qFaces[1].classList.add('on');
+  function showQuote(i, dir){
+    const r = reviews[i];
+    const apply = ()=>{
+      qText.textContent = r.text; qName.textContent = r.name; qAvatar.src = r.avatar;
+      qFaces.forEach((b,k)=>b.classList.toggle('on', k===i));
+      qi = i;
+    };
+    if(reduced || !qText.animate){ apply(); return; }
+    const a = qText.animate([{opacity:1},{opacity:0, transform:'translateY(' + (dir>0?-10:10) + 'px)'}],
+      {duration:200, easing:'ease-in', fill:'both'});
+    a.onfinish = ()=>{
+      apply();
+      qText.animate([{opacity:0, transform:'translateY(' + (dir>0?12:-12) + 'px)'},{opacity:1, transform:'none'}],
+        {duration:380, easing:'cubic-bezier(.22,1,.36,1)', fill:'both'});
+    };
+  }
+  $('#qNext').addEventListener('click', ()=>showQuote((qi+1)%reviews.length, 1));
+  $('#qPrev').addEventListener('click', ()=>showQuote((qi-1+reviews.length)%reviews.length, -1));
+  qFaces.forEach((b,k)=>b.addEventListener('click', ()=>showQuote(k, k>qi?1:-1)));
+
+  /* ============ TOAST ============ */
+  const toast = $('#toast'), toastMsg = $('#toastMsg');
+  let tT;
+  function ping(msg){
+    toastMsg.textContent = msg; toast.classList.add('show');
+    clearTimeout(tT); tT = setTimeout(()=>toast.classList.remove('show'), 2300);
+  }
+  $$('.add-cart').forEach((b,i)=>{
+    const names = ['Breakfast food','Lunch food','Dinner food'];
+    b.addEventListener('click', ()=>{
+      ping(names[i] + ' added to cart');
+      b.animate && b.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],
+        {duration:380, easing:'cubic-bezier(.22,1,.36,1)'});
+    });
+  });
+  $('#subForm').addEventListener('submit', e=>{
+    e.preventDefault(); ping('Subscribed — thanks!'); e.target.reset();
+  });
+
+  /* ============ RIPPLE ============ */
+  $$('[data-ripple]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const r = btn.getBoundingClientRect();
+      const s = document.createElement('span');
+      const size = Math.max(r.width, r.height)*1.5;
+      s.style.cssText = 'position:absolute;left:' + (e.clientX-r.left-size/2) + 'px;top:' +
+        (e.clientY-r.top-size/2) + 'px;width:' + size + 'px;height:' + size +
+        'px;border-radius:50%;background:rgba(255,255,255,.35);transform:scale(0);pointer-events:none;z-index:2';
+      btn.appendChild(s);
+      s.animate([{transform:'scale(0)',opacity:.7},{transform:'scale(1)',opacity:0}],
+        {duration:650, easing:'cubic-bezier(.22,1,.36,1)'}).onfinish = ()=>s.remove();
+    });
+  });
+
+  /* ============ INIT ============ */
+  placeSats();
+  setActive(0);
+  restart();
+  addEventListener('resize', placeSats);
+})();
+</script>
+</body>
+</html>
