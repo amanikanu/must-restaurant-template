@@ -80,13 +80,69 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .nav-links a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1.6px;background:#1f1f1f;
   transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
 .nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);transform-origin:left}
-.nav-tools{display:flex;align-items:center;gap:14px}
-.icon-btn{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;transition:background .3s,transform .3s}
-.icon-btn svg{width:17px;height:17px;stroke:#1b1b1b;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.icon-btn:hover{background:rgba(255,255,255,.45);transform:translateY(-2px)}
+.nav-tools{display:flex;align-items:center;gap:10px}
+
+/* glass utility buttons — 40px hit area, layered ring, animated icon */
+.icon-btn{
+  position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;
+  color:#1f1f1f;isolation:isolate;
+  background:rgba(255,255,255,.82);
+  box-shadow:inset 0 0 0 1px rgba(20,20,20,.09),0 3px 10px rgba(90,45,0,.10);
+  backdrop-filter:blur(10px) saturate(140%);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease),background .35s,color .3s;
+}
+.icon-btn svg{
+  width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .5s var(--ease),stroke-width .3s;
+}
+/* soft halo that blooms on hover */
+.icon-btn::before{
+  content:'';position:absolute;inset:-3px;border-radius:50%;z-index:-1;opacity:0;
+  background:radial-gradient(circle,rgba(254,159,5,.55),rgba(254,159,5,0) 70%);
+  transform:scale(.6);transition:opacity .45s var(--ease),transform .45s var(--ease);
+}
+.icon-btn:hover{transform:translateY(-2px);color:#111;background:#fff;
+  box-shadow:inset 0 0 0 1px rgba(254,159,5,.55),0 8px 18px rgba(200,90,0,.18)}
+.icon-btn:hover::before{opacity:1;transform:scale(1)}
+.icon-btn:hover svg{stroke-width:1.95}
+.icon-btn:active{transform:translateY(0) scale(.96)}
+.icon-btn:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--orange-ink),0 0 0 4px rgba(254,159,5,.28)}
+
+/* search: the handle sweeps out from under the lens */
+.icon-btn.search:hover svg circle{transform:translate(-1px,-1px)}
+.icon-btn.search:hover svg path{transform:translate(1.5px,1.5px)}
+
+/* cart: lid tips up, badge pulses */
 .cart{position:relative}
-.cart .dot{position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%;background:#fff;
-  box-shadow:0 0 0 1.5px var(--orange)}
+.cart .badge{
+  position:absolute;top:1px;right:0;min-width:17px;height:17px;padding:0 4px;border-radius:99px;
+  display:grid;place-items:center;font-size:9.5px;font-weight:700;line-height:1;color:#fff;
+  background:linear-gradient(140deg,var(--orange-2),var(--orange-deep));
+  box-shadow:0 0 0 2px #fff,0 3px 8px rgba(200,90,0,.42);
+  transition:transform .45s var(--ease);
+}
+.cart:hover .badge{transform:scale(1.14) rotate(-6deg)}
+.cart.bump .badge{animation:badgePop .6s var(--ease)}
+@keyframes badgePop{0%{transform:scale(1)}40%{transform:scale(1.55) rotate(8deg)}100%{transform:scale(1)}}
+.cart:hover svg{transform:translateY(-1px)}
+.cart .lid{transform-origin:8px 9px;transition:transform .45s var(--ease)}
+.cart:hover .lid{transform:rotate(-9deg)}
+
+/* nav links: sliding underline + dot */
+.nav-links a{position:relative;padding:6px 0;transition:color .3s}
+.nav-links a::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;
+  background:#1f1f1f;transform:scaleX(0);transform-origin:right;
+  transition:transform .45s var(--ease);
+}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1);transform-origin:left}
+.nav-links a::before{
+  content:'';position:absolute;left:50%;top:50%;width:3px;height:3px;border-radius:50%;
+  background:var(--orange);opacity:0;transform:translate(-50%,-50%) scale(.4);
+  transition:opacity .35s,transform .35s var(--ease);
+}
+.nav-links a.active::before{opacity:1;transform:translate(-50%,14px) scale(1)}
 .burger{display:none;width:36px;height:36px;place-items:center;border-radius:10px}
 .burger span{display:block;width:18px;height:2px;background:#1b1b1b;border-radius:2px;margin:2.5px 0;
   transition:transform .4s var(--ease),opacity .3s}
@@ -102,21 +158,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .hero-wedge{position:absolute;inset:0 0 0 0;z-index:0;pointer-events:none}
 .hero-wedge svg{position:absolute;inset:0;width:100%;height:100%;display:block;will-change:transform}
 .hero-grid{position:relative;z-index:2;width:min(1240px,90vw);margin-inline:auto;
-  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:16px}
+  display:grid;grid-template-columns:minmax(0,1.03fr) minmax(0,.97fr);align-items:center;gap:clamp(20px,2.4vw,38px)}
 
-.hero-copy{padding-block:10px}
+.hero-copy{padding-block:10px;position:relative;z-index:3}
 .eyebrow{display:flex;align-items:center;gap:9px;font-size:clamp(13px,1.15vw,15px);font-weight:400;color:var(--orange);
   margin-bottom:20px;letter-spacing:.01em}
 .eyebrow::before{content:'';width:18px;height:1.5px;background:var(--orange);border-radius:2px;
   transform-origin:left}
-.hero h1{margin:0;font-size:clamp(36px,5.35vw,68px);line-height:1.26;font-weight:600;color:#141414;
-  letter-spacing:-1.8px}
+.hero h1{margin:0;font-size:clamp(34px,4.55vw,62px);line-height:1.27;font-weight:600;color:#141414;
+  letter-spacing:-1.6px;max-width:min(100%,11.6em);text-wrap:balance}
+.hero h1 em{white-space:nowrap}
 .hero h1 .row{display:block;overflow:hidden}
 .hero h1 .row > span{display:block;transform:translateY(115%)}
 .hero h1 em{font-style:normal;color:var(--orange);font-weight:600}
-.hero-sub{margin:24px 0 28px;max-width:430px;font-size:clamp(12.5px,1.08vw,14.5px);line-height:1.85;color:#3a3a3a;font-weight:400}
-.hero-sub span{display:block;overflow:hidden}
-.hero-sub span i{display:block;font-style:normal;transform:translateY(110%)}
+.hero-sub{margin:22px 0 30px;max-width:44ch;font-size:clamp(12.5px,1.06vw,14.5px);line-height:1.85;
+  color:#3a3a3a;font-weight:400;text-wrap:pretty}
+.hero-sub{opacity:0;transform:translateY(14px)}
 
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;
   height:clamp(38px,3.4vw,46px);padding:0 clamp(22px,2.4vw,34px);border-radius:99px;
@@ -134,7 +191,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .btn-link:hover{background:var(--orange);color:#fff;transform:translateY(-2px);box-shadow:0 12px 24px rgba(254,159,5,.28)}
 
 /* ---------- hero stage: big plate + 3 satellites ---------- */
-.stage{position:relative;width:100%;aspect-ratio:505/500;max-width:520px;justify-self:center;
+.stage{position:relative;z-index:2;width:100%;aspect-ratio:505/500;max-width:520px;justify-self:center;
   touch-action:pan-y;cursor:grab;user-select:none}
 .stage.dragging{cursor:grabbing}
 .plate{position:absolute;left:50%;top:47%;width:78%;aspect-ratio:1/1;transform:translate(-50%,-50%);
@@ -290,7 +347,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ============================================================
    FOOTER  — LIGHT, exactly like the mockup
    ============================================================ */
-.foot{position:relative;padding:clamp(64px,8.4vw,118px) 0 0;overflow:hidden;background:#fff}
+.foot{position:relative;padding:clamp(64px,8.4vw,118px) 0 0;overflow:hidden;background:#fff;
+  isolation:isolate}
+.foot-grid,.foot-bottom{position:relative;z-index:3}
 .foot-grid{display:grid;grid-template-columns:1.15fr 1fr 1.05fr 1.05fr;
   gap:clamp(20px,3vw,40px);position:relative;z-index:3}
 .foot .logo{margin-bottom:14px}
@@ -311,13 +370,25 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .foot-bottom{position:relative;z-index:3;margin-top:clamp(34px,4.6vw,56px);padding:18px 0 22px;
   display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
   font-size:clamp(10.5px,.95vw,12.5px);color:#8a8a8a}
-.foot-plate{position:absolute;left:-4%;bottom:-16%;width:180px;z-index:1;
-  border-radius:50%;overflow:hidden;will-change:transform;
-  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 60%,transparent 100%);
-  mask-image:radial-gradient(circle at 50% 50%,#000 60%,transparent 100%)}
+/* decorative art lives in its own band above the copyright row, and fades out
+   before it can ever run under live text */
+.foot-art{
+  position:absolute;left:0;right:0;bottom:60px;height:clamp(120px,15vw,190px);
+  z-index:1;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to top,#000 55%,transparent 100%);
+  mask-image:linear-gradient(to top,#000 55%,transparent 100%);
+}
+.foot-plate{position:absolute;left:-5%;bottom:0;width:clamp(120px,13vw,180px);border-radius:50%;overflow:hidden;
+  will-change:transform;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 58%,transparent 100%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 58%,transparent 100%)}
 .foot-plate img{width:100%}
-.foot-bits{position:absolute;right:-1%;bottom:2%;width:150px;z-index:1;will-change:transform;opacity:.95}
+.foot-bits{position:absolute;right:0;bottom:0;width:clamp(120px,14vw,190px);will-change:transform}
 .foot-bits img{width:100%;height:auto}
+.foot-bottom{padding-bottom:clamp(26px,3vw,34px)}
+@media (max-width:640px){
+  .foot-art{height:110px;bottom:76px;opacity:.5}
+}
 
 /* ============================================================
    TOAST / MOBILE MENU
@@ -379,8 +450,6 @@ body.locked{overflow:hidden}
   .dish-tag{bottom:0}
   .dots{bottom:-22px}
   .foot-grid{grid-template-columns:1fr}
-  .foot-plate{width:130px;bottom:6%;left:-12%;opacity:.6}
-  .foot-bits{width:110px;right:-6%;bottom:0}
   .foot-bottom{flex-direction:column;gap:6px;padding-bottom:30px}
   .quote{min-height:0}
   .cards-pager{margin-top:18px}
@@ -389,7 +458,8 @@ body.locked{overflow:hidden}
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
   html{scroll-behavior:auto}
   [data-rv]{opacity:1 !important;transform:none !important}
-  .hero h1 .row > span,.hero-sub span i{transform:none !important}
+  .hero h1 .row > span{transform:none !important}
+  .hero-sub{opacity:1 !important;transform:none !important}
 }
 </style>
 </head>
@@ -427,12 +497,19 @@ body.locked{overflow:hidden}
       <a href="#contact">Contact us</a>
     </div>
     <div class="nav-tools">
-      <button class="icon-btn" aria-label="Search">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="M15.8 15.8 21 21"/></svg>
+      <button class="icon-btn search" aria-label="Search dishes">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="10.6" cy="10.6" r="6.1"/>
+          <path d="M15.2 15.2 20.5 20.5"/>
+        </svg>
       </button>
-      <button class="icon-btn cart" aria-label="Cart">
-        <svg viewBox="0 0 24 24"><path d="M4.5 8.5h15l-1.4 10a2 2 0 0 1-2 1.7H7.9a2 2 0 0 1-2-1.7l-1.4-10Z"/><path d="M9 8.5V6.6a3 3 0 0 1 6 0v1.9"/></svg>
-        <span class="dot"></span>
+      <button class="icon-btn cart" id="cartBtn" aria-label="Cart, 0 items">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path class="lid" d="M8.6 8.4V6.7a3.4 3.4 0 0 1 6.8 0v1.7"/>
+          <path d="M4.2 8.4h15.6l-1.3 9.9a2.2 2.2 0 0 1-2.2 1.9H7.7a2.2 2.2 0 0 1-2.2-1.9L4.2 8.4Z"/>
+          <path d="M9.6 12.2v4M14.4 12.2v4" opacity=".45"/>
+        </svg>
+        <span class="badge" id="cartBadge" hidden>0</span>
       </button>
       <button class="burger icon-btn" id="burger" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -477,11 +554,8 @@ body.locked{overflow:hidden}
         <span class="row"><span>We Serve</span></span>
         <span class="row"><span>Delicious <em>Food</em></span></span>
       </h1>
-      <p class="hero-sub">
-        <span><i>Keep it easy with those simple but delicious recipes</i></span>
-        <span><i>From make -ahead lunches and midweek meals to</i></span>
-        <span><i>fuss -free sides</i></span>
-      </p>
+      <p class="hero-sub" id="heroSub">Keep it easy with those simple but delicious recipes.
+        From make-ahead lunches and midweek meals to fuss-free sides.</p>
       <a href="#menu" class="btn btn-primary" data-ripple>Get started</a>
     </div>
 
@@ -641,8 +715,10 @@ body.locked{overflow:hidden}
 
 <!-- ================= FOOTER (light) ================= -->
 <footer class="foot" id="contact">
-  <div class="foot-plate" data-parallax="-30"><img data-reuse="i-hero" alt=""></div>
-  <div class="foot-bits" data-parallax="26"><img data-reuse="i-chicken" alt=""></div>
+  <div class="foot-art" aria-hidden="true">
+    <div class="foot-plate" data-parallax="-30"><img data-reuse="i-hero" alt=""></div>
+    <div class="foot-bits" data-parallax="26"><img data-reuse="i-chicken" alt=""></div>
+  </div>
 
   <div class="wrap">
     <div class="foot-grid">
@@ -909,10 +985,11 @@ addEventListener('DOMContentLoaded', () => {
       s.style.transition = 'transform 1s cubic-bezier(.22,1,.36,1) ' + (0.12 + i*0.09) + 's';
       s.style.transform = 'translateY(0)';
     });
-    $$('.hero-sub span i').forEach((s,i)=>{
-      s.style.transition = 'transform .9s cubic-bezier(.22,1,.36,1) ' + (0.34 + i*0.07) + 's';
-      s.style.transform = 'translateY(0)';
-    });
+    const sub = $('#heroSub');
+    if(sub){
+      sub.style.transition = 'opacity .9s cubic-bezier(.22,1,.36,1) .34s, transform .9s cubic-bezier(.22,1,.36,1) .34s';
+      sub.style.opacity = '1'; sub.style.transform = 'none';
+    }
     const st = stage;
     if(st.animate) st.animate(
       [{opacity:0, transform:'scale(.9) translateY(18px)'},{opacity:1, transform:'none'}],
@@ -960,12 +1037,41 @@ addEventListener('DOMContentLoaded', () => {
     toastMsg.textContent = msg; toast.classList.add('show');
     clearTimeout(tT); tT = setTimeout(()=>toast.classList.remove('show'), 2300);
   }
+  /* ---------- cart ---------- */
+  const cartBtn = $('#cartBtn'), cartBadge = $('#cartBadge');
+  let cartCount = 0;
+  function bumpCart(){
+    cartCount++;
+    cartBadge.hidden = false;
+    cartBadge.textContent = cartCount;
+    cartBtn.setAttribute('aria-label', 'Cart, ' + cartCount + (cartCount === 1 ? ' item' : ' items'));
+    cartBtn.classList.remove('bump'); void cartBtn.offsetWidth;
+    cartBtn.classList.add('bump');
+  }
+  cartBtn?.addEventListener('click', ()=>{
+    ping(cartCount ? cartCount + ' item' + (cartCount===1?'':'s') + ' in your cart' : 'Your cart is empty');
+  });
+
   $$('.add-cart').forEach((b,i)=>{
     const names = ['Breakfast food','Lunch food','Dinner food'];
     b.addEventListener('click', ()=>{
       ping(names[i] + ' added to cart');
+      bumpCart();
       b.animate && b.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],
         {duration:380, easing:'cubic-bezier(.22,1,.36,1)'});
+    });
+  });
+
+  /* search: focus the menu with a quick highlight */
+  $('.icon-btn.search')?.addEventListener('click', ()=>{
+    const menu = document.getElementById('menu');
+    menu?.scrollIntoView({behavior:'smooth', block:'start'});
+    $$('.card .shot').forEach((el,i)=>{
+      el.animate && el.animate(
+        [{boxShadow:'0 0 0 0 rgba(254,159,5,0)'},
+         {boxShadow:'0 0 0 3px rgba(254,159,5,.55)'},
+         {boxShadow:'0 0 0 0 rgba(254,159,5,0)'}],
+        {duration:1100, delay:260 + i*120, easing:'ease-out'});
     });
   });
   $('#subForm').addEventListener('submit', e=>{

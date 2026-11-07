@@ -54,7 +54,7 @@ def landscape(im, out_size):
 
 
 # ---------------------------------------------------------------- chroma key
-def chroma_key(src_path, dst_name, max_w, key_tol=60, glass_tone=(62, 26, 18), erode=1):
+def chroma_key(src_path, dst_name, max_w, key_tol=60, glass_tone=(62, 26, 18), erode=1, kill_pale=False):
     """Remove a flat chroma backdrop and return a clean, opaque product cutout.
 
     1. flood fill the background from the frame -> hard mask
@@ -114,6 +114,11 @@ def chroma_key(src_path, dst_name, max_w, key_tol=60, glass_tone=(62, 26, 18), e
         t = (np.clip((greenish - 0.32) / 0.68, 0, 1) * 0.92)[:, :, None]
         rgb = np.where(spill[:, :, None], rgb * (1 - t) + tone * t, rgb)
 
+    if kill_pale:   # drop the pale haze left by soft shadows on the backdrop
+        lum = rgb.mean(axis=2)
+        pale = (lum > 204) & ((rgb.max(axis=2) - rgb.min(axis=2)) < 26)
+        alpha = np.where(pale, 0.0, alpha)
+
     out = np.dstack([np.clip(rgb, 0, 255).astype(np.uint8),
                      (np.clip(alpha, 0, 1) * 255).astype(np.uint8)])
     img = Image.fromarray(out, "RGBA")
@@ -152,12 +157,10 @@ print("chroma keys:")
 bottle = chroma_key(SRC / "v3-bottle-key.jpg", "ketchup", 300, key_tol=70, erode=1,
                     glass_tone=None)
 qa_sheet(bottle, "ketchup")
-# the confetti sits on the white footer, so no keying is needed (and no halos)
-chicken = Image.open(SRC / "v2-fried-chicken.jpg").convert("RGB")
-chicken = chicken.crop(chicken.getbbox() if False else (0, 0, chicken.width, chicken.height))
-w0, h0 = chicken.size
-chicken = chicken.crop((0, int(h0 * 0.12), w0, int(h0 * 0.95))).resize((520, 290), Image.LANCZOS)
-save(chicken, "fried-chicken", 88)
+# chicken: shot on chroma green so it can float on the white footer without a box
+chicken = chroma_key(SRC / "v4-chicken-key.jpg", "fried-chicken", 620, key_tol=60, erode=1,
+                     glass_tone=None, kill_pale=True)
+qa_sheet(chicken, "fried-chicken")
 
 print("hero + plates:")
 im = Image.open(SRC / "v2-hero-satay.jpg").convert("RGB")

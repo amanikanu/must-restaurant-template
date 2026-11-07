@@ -51,6 +51,20 @@ active-link scrollspy · IntersectionObserver reveals with stagger · parallax o
 plate and bottle · subtle cursor tilt on cards and plates · animated add-to-cart toasts ·
 ripple on the CTA · full-screen clip-path mobile menu.
 
+## UI pass (nav · hero · footer)
+
+- **Nav tools**: search and cart are now 40 px glass buttons — hairline ring, backdrop blur,
+  orange halo on hover, icon micro-motion (the search handle sweeps, the cart lid tips), a
+  pulsing count badge, `aria-label` that updates with the item count, and a visible focus ring.
+  Search scrolls to the menu and flashes the cards; the cart reports its state.
+- **Hero safety**: the headline is capped to its grid column with `text-wrap: balance`, `Food`
+  is wrapped in `nowrap`, and the copy column sits above the plate on the z-axis. Verified with
+  no overlap and no clipping at 1280 / 1366 / 1440 / 1536 / 1680 / 1920 px.
+- **Sub-copy** is a single flowing paragraph (`44ch`, `text-wrap: pretty`) instead of three
+  hard-coded lines, so it can no longer break into orphans.
+- **Footer**: the decorative plate and chicken now live in their own masked band above the
+  copyright row. Verified with `elementFromPoint` that **no text is painted over by the art**.
+
 ## Responsive
 
 Verified at 1440 px, 768 px and 390 px. On small screens the hero stacks: plate block on top of
