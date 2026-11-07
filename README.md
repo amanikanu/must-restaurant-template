@@ -63,9 +63,11 @@ walkthrough — creating a **fine-grained** personal access token (Contents: Rea
 pushing without ever writing the token to disk, the common error messages, and turning on
 GitHub Pages.
 
+Target repo: **https://github.com/amanikanu/must-restaurant-template** (already set as `origin`).
+
 ```bash
 read -rsp "GitHub token: " GH_TOKEN && export GH_TOKEN && echo
-./tools/deploy.sh <your-username> <repo-name>
+./tools/deploy.sh amanikanu must-restaurant-template
 ```
 
 ## Files
