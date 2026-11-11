@@ -6,7 +6,7 @@
 
 Run:  python3 tools/make.py
 """
-import base64, pathlib, re
+import base64, pathlib, re, secrets
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC = ROOT / "tools" / "src-v2.html"
@@ -36,9 +36,16 @@ def main():
     assert not left, f"unresolved assets: {left[:5]}"
 
     OUT.write_text(html)
+    # Every build gets a new opaque preview route. The robots meta tag is
+    # included in both the root artifact and this shareable preview copy.
+    preview_id = secrets.token_hex(8)
+    preview_out = ROOT / "previews" / preview_id / "index.html"
+    preview_out.parent.mkdir(parents=True, exist_ok=True)
+    preview_out.write_text(html)
     print("\n".join(report))
     print(f"\ninlined {len(refs)} images")
     print(f"index.html -> {OUT.stat().st_size/1024:.0f} KB")
+    print(f"random preview route -> previews/{preview_id}/")
 
 
 if __name__ == "__main__":

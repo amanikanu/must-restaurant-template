@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <title>pixelspark — We Serve Delicious Food</title>
 <!--FONTS-->
 <style>
@@ -462,8 +463,39 @@ body.locked{overflow:hidden}
   .hero-sub{opacity:1 !important;transform:none !important}
 }
 </style>
+<style>
+/* Preview package: six clear blocks, readable type, and an always-visible offer. */
+html{scroll-padding-bottom:86px}
+body{font-size:17px;padding-bottom:82px}
+p,.hero-sub,.about-copy p,.why-card p,.quote,.foot p,.foot-links a,.foot-bottom{font-size:16px;line-height:1.7}
+button,.btn,.btn-link,.nav-links,.eyebrow,.dish-tag,.swipe-hint,.logo{font-size:14px}
+.card h3,.foot h4,.faq-list summary{font-size:17px}
+.card .price,.dish-tag .price,.foot li{font-size:14px}
+.foot-bottom{font-size:14px}
+.about,.say{display:none!important}
+.nav-tools{display:none!important}
+.popular{padding:clamp(42px,6vw,76px) 0}
+.why{padding:clamp(42px,6vw,76px) 0}
+.sec-head{margin-bottom:30px}
+.preview-notice{position:fixed;top:0;left:0;right:0;z-index:140;padding:10px 16px;text-align:center;background:#171717;color:#fff;font-size:14px;line-height:1.4}
+.nav,.nav.solid{top:40px}
+.hero{padding-top:calc(var(--nav-h) + 52px)}
+.preview-bar{position:fixed;z-index:150;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:18px;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);border-top:1px solid #e8e8e8;box-shadow:0 -8px 28px rgba(0,0,0,.09);backdrop-filter:blur(14px)}
+.preview-price{font-size:17px;font-weight:700;color:#171717;white-space:nowrap}
+.preview-bar .btn{min-height:48px;padding:12px 26px;font-size:14px}
+.simple-section{padding:clamp(42px,6vw,76px) 0;background:#fff}
+.simple-section .simple-card{max-width:780px;margin:auto;padding:clamp(22px,4vw,42px);border:1px solid #eee;border-radius:20px;box-shadow:0 12px 40px rgba(20,20,20,.06)}
+.faq-list{display:grid;gap:12px;margin-top:24px}
+.faq-list details{padding:18px 20px;border:1px solid #ececec;border-radius:14px;background:#fff}
+.faq-list summary{font-size:17px;font-weight:700;cursor:pointer}
+.faq-list details p{margin:12px 0 0;color:#555}
+.contact-panel{display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
+@media(max-width:640px){body{padding-bottom:80px}.preview-notice{font-size:13px}.preview-bar{gap:12px}.preview-price{font-size:16px}.preview-bar .btn{padding:11px 18px}.nav,.nav.solid{top:38px}}
+</style>
 </head>
 <body>
+<div class="preview-notice">This preview will be deleted in 30 days</div>
+<div class="preview-bar"><span class="preview-price">$499</span><a class="btn btn-primary" href="#contact">Get this site</a></div>
 <div id="progress"></div>
 
 <!-- ================= NAV ================= -->
@@ -491,9 +523,9 @@ body.locked{overflow:hidden}
     </a>
     <div class="nav-links" id="navLinks">
       <a href="#top" class="active">Home</a>
-      <a href="#about">About us</a>
-      <a href="#menu">Menu</a>
-      <a href="#say">Testimonials</a>
+      <a href="#menu">Services</a>
+      <a href="#why">Why us</a>
+      <a href="#faq">FAQ</a>
       <a href="#contact">Contact us</a>
     </div>
     <div class="nav-tools">
@@ -608,12 +640,12 @@ body.locked{overflow:hidden}
 <!-- ================= MOST POPULAR FOOD ================= -->
 <section class="popular" id="menu">
   <div class="wrap">
-    <div class="sec-head"><h2 data-rv="up">Most Popular <em>Food</em></h2></div>
+    <div class="sec-head"><h2 data-rv="up">Our <em>Services</em></h2></div>
     <div class="cards">
       <article class="card" data-rv="up" data-tilt>
         <div class="shot thin"><img src="build/v2/breakfast.webp" alt="Breakfast food" id="i-breakfast"></div>
         <div class="body">
-          <div class="row"><h3>Breakfast food</h3><button class="add-cart">Add to cart</button></div>
+          <div class="row"><h3>Custom Website</h3><button class="add-cart">Learn more</button></div>
           <div class="meta">
             <div class="stars">
               <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg>
@@ -626,7 +658,7 @@ body.locked{overflow:hidden}
       <article class="card feature" data-rv="up" style="--d:100ms" data-tilt>
         <div class="shot"><img src="build/v2/lunch-tray.webp" alt="Lunch food platter"></div>
         <div class="body">
-          <div class="row"><h3>Lunch food</h3><button class="add-cart">Add to cart</button></div>
+          <div class="row"><h3>Mobile Ready</h3><button class="add-cart">Learn more</button></div>
           <div class="meta">
             <div class="stars">
               <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg>
@@ -639,7 +671,7 @@ body.locked{overflow:hidden}
       <article class="card" data-rv="up" style="--d:200ms" data-tilt>
         <div class="shot thin"><img src="build/v2/dinner-board.webp" alt="Dinner food"></div>
         <div class="body">
-          <div class="row"><h3>Dinner food</h3><button class="add-cart">Add to cart</button></div>
+          <div class="row"><h3>Local SEO</h3><button class="add-cart">Learn more</button></div>
           <div class="meta">
             <div class="stars">
               <svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.7-6-3.3-6 3.3L7.3 13.8l-5-4.7 6.8-.9z"/></svg>
@@ -654,9 +686,9 @@ body.locked{overflow:hidden}
 </section>
 
 <!-- ================= WHY CHOOSE ================= -->
-<section class="why">
+<section class="why" id="why">
   <div class="wrap">
-    <div class="sec-head"><h2 data-rv="up">Why choose our <em>Food</em></h2></div>
+    <div class="sec-head"><h2 data-rv="up">Why <em>Choose Us</em></h2></div>
     <div class="why-grid">
       <div class="why-card" data-rv="up">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h10l-1 6.2a4 4 0 0 1-8 0L7 3Z"/><path d="M12 13.4V21"/><path d="M8.5 21h7"/><path d="M6.2 3h11.6"/></svg></div>
@@ -674,6 +706,26 @@ body.locked{overflow:hidden}
         <p>Keep healthy food readily available. When you get hungry, you're moe kely to eat</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="simple-section" id="faq">
+  <div class="wrap simple-card">
+    <div class="sec-head"><h2>Frequently Asked <em>Questions</em></h2></div>
+    <div class="faq-list">
+      <details><summary>How long does setup take?</summary><p>Most sites are ready to review within a few business days after we receive your content.</p></details>
+      <details><summary>Can I update the site later?</summary><p>Yes. We can make updates as your services, hours, and contact details change.</p></details>
+      <details><summary>What do you need from me?</summary><p>Share your preferred business details and contact information. We use licensed stock or AI generated imagery for the preview.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="simple-section" id="contact">
+  <div class="wrap simple-card contact-panel">
+    <div><h2>Ready for a <em>website?</em></h2><p>Get in touch to make this site yours.</p></div>
+    <a class="btn btn-primary" href="mailto:hello@pixelspark.com">Contact us</a>
   </div>
 </section>
 
@@ -714,7 +766,7 @@ body.locked{overflow:hidden}
 </section>
 
 <!-- ================= FOOTER (light) ================= -->
-<footer class="foot" id="contact">
+<footer class="foot" id="footer">
   <div class="foot-art" aria-hidden="true">
     <div class="foot-plate" data-parallax="-30"><img data-reuse="i-hero" alt=""></div>
     <div class="foot-bits" data-parallax="26"><img data-reuse="i-chicken" alt=""></div>
